@@ -32,5 +32,7 @@ public abstract class DAO<T> {
 	
 	public abstract T findById(int id);
 	public abstract List<T> findAll();
+	public abstract String acharArquivo(String message);
+
 
 }

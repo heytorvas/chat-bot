@@ -55,6 +55,7 @@ public class TesteDAO extends DAO<Teste>  {
 		return false;
 	}
 
+
 	@Override
 	public boolean update(Teste obj) {
 		// TODO Auto-generated method stub
@@ -72,8 +73,43 @@ public class TesteDAO extends DAO<Teste>  {
 		// TODO Auto-generated method stub
 		return null;
 	}
-	
-	
 
+	@Override
+	public String acharArquivo(String message) {
+		// verificando se tem uma conexao valida
+		if (getConnection() == null) {
+			return null;
+		}
+		System.out.println(message);
+
+		String[] frase_array = message.split(" ");
+
+		List<String> listaSinonimoOnde = new ArrayList<String>();
+
+		listaSinonimoOnde.add("onde");
+		listaSinonimoOnde.add("aonde");
+
+		List<String> listaSinonimosArquivo = new ArrayList<String>();
+
+		listaSinonimosArquivo.add("arquivo");
+		listaSinonimosArquivo.add("documento");
+
+		for (String keywordArquivo : frase_array) {
+			if (listaSinonimosArquivo.contains(keywordArquivo) == true) {
+				System.out.println("chave 1: " + keywordArquivo);
+
+				for (String keywordOnde : frase_array) {
+					if (listaSinonimoOnde.contains(keywordOnde) == true) {
+						System.out.println("chave 2: " + keywordOnde);
+						return message;
+					}
+				}
+			}
+
+		}
+
+		System.out.println("erro");
+		return null;
+	}
 }
 
