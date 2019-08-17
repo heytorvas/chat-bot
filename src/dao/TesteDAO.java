@@ -33,6 +33,7 @@ public class TesteDAO extends DAO<Teste>  {
 				teste.setAno(rs.getString("ano"));
 				teste.setOrientador(rs.getString("orientador"));
 				teste.setOrientado(rs.getString("orientado"));
+				teste.setLink_down(rs.getString("link_down"));
 
 				listaTeste.add(teste);
 			}
@@ -76,21 +77,55 @@ public class TesteDAO extends DAO<Teste>  {
 
 	@Override
 	public String acharArquivo(String message) {
+
 		// verificando se tem uma conexao valida
 		if (getConnection() == null) {
 			return null;
 		}
-		System.out.println(message);
+		
+		List<Teste> listaTeste = new ArrayList<Teste>();
+		
+		PreparedStatement stat = null;
+	
+		try {
+			stat = getConnection().prepareStatement("SELECT * FROM infodocs");
+			ResultSet rs = stat.executeQuery();
+			//adicionando cada linha do banco de dados na lista
+			while(rs.next()) {
+				Teste teste = new Teste();
+				teste.setId(rs.getInt("id"));
+				teste.setNome(rs.getString("nome"));
+				teste.setTipo(rs.getInt("tipo"));
+				teste.setCurso(rs.getInt("curso"));
+				teste.setAno(rs.getString("ano"));
+				teste.setOrientador(rs.getString("orientador"));
+				teste.setOrientado(rs.getString("orientado"));
+				teste.setLink_down(rs.getString("link_down"));
+
+				listaTeste.add(teste);
+			}
+		} catch (SQLException e) {
+			e.printStackTrace();
+			listaTeste = null;
+		} finally {
+			try {
+				stat.close();
+			} catch (SQLException e) {
+				e.printStackTrace();
+			}
+		}
 
 		String[] frase_array = message.split(" ");
+		
+		//acessar os dados que estao na lista
+		//comparar os dados da lista com a mensagem do usuario
+		//mandar o print do link no echotext
 
 		List<String> listaSinonimoOnde = new ArrayList<String>();
-
 		listaSinonimoOnde.add("onde");
 		listaSinonimoOnde.add("aonde");
 
 		List<String> listaSinonimosArquivo = new ArrayList<String>();
-
 		listaSinonimosArquivo.add("arquivo");
 		listaSinonimosArquivo.add("documento");
 
@@ -107,8 +142,6 @@ public class TesteDAO extends DAO<Teste>  {
 			}
 
 		}
-
-		System.out.println("erro");
 		return null;
 	}
 }

@@ -9,7 +9,14 @@ public class Teste {
 	private String ano;
 	private String orientador;
 	private String orientado;
+	private String link_down;
 	
+	public String getLink_down() {
+		return link_down;
+	}
+	public void setLink_down(String link_down) {
+		this.link_down = link_down;
+	}
 	public Integer getId() {
 		return id;
 	}
