@@ -27,9 +27,10 @@ public class WebsocketController {
 
     	String echoMsg;
     	
-        //interprtarTexto
-        if(dao.acharArquivo(message) != null) {
+        //interpretarTexto
+        if(dao.sqlAcharArquivo(message) == true) {
         	echoMsg = "[+]procurando arquivo no banco de dados";
+        	echoMsg = dao.getResposta();
         }
         else {
         	echoMsg = "posso ajudar?";

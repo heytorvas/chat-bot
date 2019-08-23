@@ -3,51 +3,24 @@ package dao;
 import java.sql.PreparedStatement;
 import java.sql.ResultSet;
 import java.sql.SQLException;
-import java.util.ArrayList;
 import java.util.List;
 
 import model.Teste;
 
-public class TesteDAO extends DAO<Teste>  {
+public class TesteDAO extends DAO<Teste> {
+	private String resposta;
+	
+
+	public String getResposta() {
+		return resposta;
+	}
+	public void setResposta(String resposta) {
+		this.resposta = resposta;
+	}
 
 	@Override
 	public List<Teste> findAll() {
-		// verificando se tem uma conexao valida
-		if (getConnection() == null) {
-			return null;
-		}
-		
-		List<Teste> listaTeste = new ArrayList<Teste>();
-		
-		PreparedStatement stat = null;
-	
-		try {
-			stat = getConnection().prepareStatement("SELECT * FROM infodocs");
-			ResultSet rs = stat.executeQuery();
-			while(rs.next()) {
-				Teste teste = new Teste();
-				teste.setId(rs.getInt("id"));
-				teste.setNome(rs.getString("nome"));
-				teste.setTipo(rs.getInt("tipo"));
-				teste.setCurso(rs.getInt("curso"));
-				teste.setAno(rs.getString("ano"));
-				teste.setOrientador(rs.getString("orientador"));
-				teste.setOrientado(rs.getString("orientado"));
-				teste.setLink_down(rs.getString("link_down"));
-
-				listaTeste.add(teste);
-			}
-		} catch (SQLException e) {
-			e.printStackTrace();
-			listaTeste = null;
-		} finally {
-			try {
-				stat.close();
-			} catch (SQLException e) {
-				e.printStackTrace();
-			}
-		}
-		return listaTeste;
+		return null;
 	}
 
 	@Override
@@ -55,7 +28,6 @@ public class TesteDAO extends DAO<Teste>  {
 		// TODO Auto-generated method stub
 		return false;
 	}
-
 
 	@Override
 	public boolean update(Teste obj) {
@@ -74,75 +46,95 @@ public class TesteDAO extends DAO<Teste>  {
 		// TODO Auto-generated method stub
 		return null;
 	}
-
+	
 	@Override
-	public String acharArquivo(String message) {
-
+	public boolean sqlAcharArquivo(String message) {
 		// verificando se tem uma conexao valida
 		if (getConnection() == null) {
-			return null;
+			return false;
 		}
-		
-		List<Teste> listaTeste = new ArrayList<Teste>();
-		
-		PreparedStatement stat = null;
-	
-		try {
-			stat = getConnection().prepareStatement("SELECT * FROM infodocs");
-			ResultSet rs = stat.executeQuery();
-			//adicionando cada linha do banco de dados na lista
-			while(rs.next()) {
-				Teste teste = new Teste();
-				teste.setId(rs.getInt("id"));
-				teste.setNome(rs.getString("nome"));
-				teste.setTipo(rs.getInt("tipo"));
-				teste.setCurso(rs.getInt("curso"));
-				teste.setAno(rs.getString("ano"));
-				teste.setOrientador(rs.getString("orientador"));
-				teste.setOrientado(rs.getString("orientado"));
-				teste.setLink_down(rs.getString("link_down"));
 
-				listaTeste.add(teste);
-			}
-		} catch (SQLException e) {
-			e.printStackTrace();
-			listaTeste = null;
-		} finally {
-			try {
-				stat.close();
-			} catch (SQLException e) {
-				e.printStackTrace();
-			}
-		}
+		PreparedStatement stat = null;
+
+		// **6 keywords
+		
+		// fazer o tratamento da keywords com if para cada if fazer a busca no banco de
+		// dados
+		
+		// fazer a busca no banco de dados apenas com as informações que o usuario
+		// digitou = retornar uma lista com os resultados
+		
+		// se o usuario digitar uma quantidade de keywords suficientes para retornar um
+		// arquivo = retornar o link do arquivo
 
 		String[] frase_array = message.split(" ");
-		
-		//acessar os dados que estao na lista
-		//comparar os dados da lista com a mensagem do usuario
-		//mandar o print do link no echotext
 
-		List<String> listaSinonimoOnde = new ArrayList<String>();
-		listaSinonimoOnde.add("onde");
-		listaSinonimoOnde.add("aonde");
+		for (int i = 0; i < frase_array.length; i++) {
 
-		List<String> listaSinonimosArquivo = new ArrayList<String>();
-		listaSinonimosArquivo.add("arquivo");
-		listaSinonimosArquivo.add("documento");
-
-		for (String keywordArquivo : frase_array) {
-			if (listaSinonimosArquivo.contains(keywordArquivo) == true) {
-				System.out.println("chave 1: " + keywordArquivo);
-
-				for (String keywordOnde : frase_array) {
-					if (listaSinonimoOnde.contains(keywordOnde) == true) {
-						System.out.println("chave 2: " + keywordOnde);
-						return message;
+			if (frase_array[i].equals("tcc")) {
+				// fazer a busca no banco de dados e retornar
+				try {
+					stat = getConnection().prepareStatement("SELECT * FROM infodocs WHERE tipo = 1");
+					ResultSet rs = stat.executeQuery();
+					while (rs.next()) {
+						
+						Teste teste = new Teste();
+						teste.setNome(rs.getString("nome"));
+						teste.setAno(rs.getString("ano"));
+						teste.setOrientador(rs.getString("orientador"));
+						teste.setOrientado(rs.getString("orientado"));
+						
+						System.out.println();
+						System.out.println("NOME: " + rs.getString("nome"));
+						System.out.println("ANO: " + rs.getString("ano"));
+						System.out.println("ORIENTADOR: " + rs.getString("orientador"));
+						System.out.println("ORIENTADO: " + rs.getString("orientado"));
+						System.out.println();
+						
+						setResposta("NOME: " + rs.getString("nome") + "\n" + "ANO: " + rs.getString("ano"));
+						
+						
+					}
+					return true;
+				} catch (SQLException e) {
+					// TODO Auto-generated catch block
+					e.printStackTrace();
+				} finally {
+					try {
+						stat.close();
+					} catch (SQLException e) {
+						e.printStackTrace();
 					}
 				}
 			}
 
 		}
-		return null;
-	}
-}
+		return false;
 
+//		try {
+//			stat = getConnection().prepareStatement("SELECT * FROM palavras_chaves WHERE sinonimo_onde = ?");
+//			//stat.setString(1, palavra);
+//
+//			ResultSet rs = stat.executeQuery();
+//			if (rs.next()) {
+//
+//				System.out.println(rs.getString("sinonimo_onde"));
+//				// Teste teste = new Teste();;
+//				// teste.set(rs.getString("sinonimo_onde"));
+//				// adicionar variavel palavra no teste
+//				return true;
+//			}
+//		} catch (SQLException e) {
+//			e.printStackTrace();
+//		} finally {
+//			try {
+//				stat.close();
+//			} catch (SQLException e) {
+//				e.printStackTrace();
+//			}
+//		}
+//		return false;
+
+	}
+
+}// chave da classe
